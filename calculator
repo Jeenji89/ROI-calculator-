@@ -1,0 +1,54 @@
+import streamlit as st
+
+def calculate_roi(downtime_hours, revenue_per_hour, num_employees, hourly_wage, labor_hours_saved,
+                  current_units, cost_per_unit, efficiency_gain):
+    # Downtime cost calculation
+    downtime_cost = downtime_hours * revenue_per_hour
+
+    # Labor cost savings calculation
+    current_labor_cost = num_employees * hourly_wage * 2080  # Assuming full-time annual hours
+    labor_cost_savings = labor_hours_saved * hourly_wage * 2080  # Annualized savings
+
+    # Volume efficiency savings
+    increased_units = current_units * (1 + efficiency_gain / 100)
+    volume_cost_savings = current_units * cost_per_unit - increased_units * cost_per_unit
+
+    # Total ROI calculation
+    total_savings = downtime_cost + labor_cost_savings + volume_cost_savings
+
+    return downtime_cost, labor_cost_savings, volume_cost_savings, total_savings
+
+# Streamlit app UI
+st.title("Customer ROI Calculator")
+st.write("Input your operational details below to calculate potential ROI.")
+
+# Inputs
+st.header("Inputs")
+
+# Downtime inputs
+downtime_hours = st.number_input("Monthly downtime hours", min_value=0.0, step=1.0)
+revenue_per_hour = st.number_input("Revenue lost per downtime hour ($)", min_value=0.0, step=1.0)
+
+# Labor inputs
+num_employees = st.number_input("Number of employees in operation", min_value=0, step=1)
+hourly_wage = st.number_input("Average hourly wage of employees ($)", min_value=0.0, step=1.0)
+labor_hours_saved = st.number_input("Labor hours saved per week with our machine", min_value=0.0, step=1.0)
+
+# Volume inputs
+current_units = st.number_input("Current units processed per hour", min_value=0, step=1)
+cost_per_unit = st.number_input("Cost per unit ($)", min_value=0.0, step=0.1)
+efficiency_gain = st.number_input("Efficiency gain with our machine (%)", min_value=0.0, step=0.1)
+
+# Calculation button
+if st.button("Calculate ROI"):
+    downtime_cost, labor_cost_savings, volume_cost_savings, total_savings = calculate_roi(
+        downtime_hours, revenue_per_hour, num_employees, hourly_wage, labor_hours_saved,
+        current_units, cost_per_unit, efficiency_gain
+    )
+
+    # Outputs
+    st.header("Results")
+    st.write(f"**Downtime Savings:** ${downtime_cost:,.2f} annually")
+    st.write(f"**Labor Cost Savings:** ${labor_cost_savings:,.2f} annually")
+    st.write(f"**Volume Efficiency Savings:** ${volume_cost_savings:,.2f} annually")
+    st.write(f"**Total Savings:** ${total_savings:,.2f} annually")
